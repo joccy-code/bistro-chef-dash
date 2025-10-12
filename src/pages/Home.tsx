@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import { useOutletContext, Link } from 'react-router-dom';
-import { api, MenuItem, Promotion } from '@/lib/api';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { UtensilsCrossed, Tag, Clock } from 'lucide-react';
-import { toast } from 'sonner';
+import { useEffect, useState } from "react";
+import { useOutletContext, Link } from "react-router-dom";
+import { api, MenuItem, Promotion } from "@/lib/api";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { UtensilsCrossed, Tag, Clock } from "lucide-react";
+import { toast } from "sonner";
 
 export default function Home() {
   const { language } = useOutletContext<{ language: string }>();
@@ -25,7 +25,7 @@ export default function Home() {
         api.getPublicPromotions(language),
       ]);
 
-      const activePromotions = promoData.promotions.filter(p => {
+      const activePromotions = promoData.promotions.filter((p) => {
         const now = new Date();
         const start = new Date(p.start_date);
         const end = new Date(p.end_date);
@@ -33,30 +33,44 @@ export default function Home() {
       });
 
       const featured = menuData.menu
-        .filter(item => item.is_special && item.is_available)
+        .filter((item) => item.is_special && item.is_available)
         .slice(0, 3);
 
       setFeaturedItems(featured);
       setPromotions(activePromotions);
     } catch (error) {
-      toast.error('Failed to load content');
+      toast.error("Failed to load content");
       console.error(error);
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Helpers
   const getItemName = (item: MenuItem) => {
-    if (language === 'am') return item.name_am;
-    if (language === 'or') return item.name_or;
-    return item.name_en;
+    if (language === "am") return item.name_am ?? item.name_en;
+    if (language === "or") return item.name_or ?? item.name_en;
+    return item.name_en ?? "Unnamed Dish";
   };
 
   const getItemDescription = (item: MenuItem) => {
-    if (language === 'am') return item.description_am;
-    if (language === 'or') return item.description_or;
-    return item.description_en;
+    if (language === "am") return item.description_am ?? "";
+    if (language === "or") return item.description_or ?? "";
+    return item.description_en ?? "";
   };
+
+  const formatPrice = (price: string | number) => {
+    const num = Number(price);
+    return isNaN(num) ? "0.00" : num.toFixed(2);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-20 text-center text-xl text-muted-foreground">
+        Loading content...
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -67,8 +81,8 @@ export default function Home() {
             Welcome to Our Restaurant
           </h1>
           <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground">
-            Experience authentic Ethiopian cuisine crafted with love and tradition. 
-            Every dish tells a story of flavor and culture.
+            Experience authentic Ethiopian cuisine crafted with love and
+            tradition. Every dish tells a story of flavor and culture.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Button asChild size="lg">
@@ -94,11 +108,16 @@ export default function Home() {
                 <Card key={promo.food_id} className="overflow-hidden">
                   <CardContent className="p-6">
                     <Badge className="mb-3 bg-primary">
-                      {promo.discount}% OFF
+                      {promo.discount ?? 0}% OFF
                     </Badge>
-                    <h3 className="mb-2 text-xl font-semibold">{promo.food_name}</h3>
+                    <h3 className="mb-2 text-xl font-semibold">
+                      {promo.food_name ?? "Unnamed Dish"}
+                    </h3>
                     <p className="text-sm text-muted-foreground">
-                      Valid until {new Date(promo.end_date).toLocaleDateString()}
+                      Valid until{" "}
+                      {promo.end_date
+                        ? new Date(promo.end_date).toLocaleDateString()
+                        : "N/A"}
                     </p>
                   </CardContent>
                 </Card>
@@ -117,46 +136,59 @@ export default function Home() {
               <h2 className="text-3xl font-bold">Featured Dishes</h2>
             </div>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {featuredItems.map((item) => (
-                <Card key={item.id} className="overflow-hidden transition-shadow hover:shadow-lg">
-                  <div className="aspect-video w-full overflow-hidden bg-muted">
-                    {item.image ? (
-                      <img
-                        src={item.image}
-                        alt={getItemName(item)}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center">
-                        <UtensilsCrossed className="h-12 w-12 text-muted-foreground" />
+              {featuredItems.map((item) => {
+                const priceNum = Number(item.price);
+                const hasDiscount = item.discount && item.discount > 0;
+                const discountedPrice = hasDiscount
+                  ? priceNum * (1 - item.discount! / 100)
+                  : priceNum;
+
+                return (
+                  <Card
+                    key={item.id}
+                    className="overflow-hidden transition-shadow hover:shadow-lg"
+                  >
+                    <div className="aspect-video w-full overflow-hidden bg-muted">
+                      {item.image ? (
+                        <img
+                          src={item.image}
+                          alt={getItemName(item)}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center">
+                          <UtensilsCrossed className="h-12 w-12 text-muted-foreground" />
+                        </div>
+                      )}
+                    </div>
+                    <CardContent className="p-6">
+                      <div className="mb-2 flex items-start justify-between">
+                        <h3 className="text-xl font-semibold">
+                          {getItemName(item)}
+                        </h3>
+                        {hasDiscount && (
+                          <Badge variant="secondary">
+                            {item.discount}% OFF
+                          </Badge>
+                        )}
                       </div>
-                    )}
-                  </div>
-                  <CardContent className="p-6">
-                    <div className="mb-2 flex items-start justify-between">
-                      <h3 className="text-xl font-semibold">{getItemName(item)}</h3>
-                      {item.discount > 0 && (
-                        <Badge variant="secondary">{item.discount}% OFF</Badge>
-                      )}
-                    </div>
-                    <p className="mb-4 text-sm text-muted-foreground line-clamp-2">
-                      {getItemDescription(item)}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-2xl font-bold text-primary">
-                        ${item.discount > 0 
-                          ? (item.price * (1 - item.discount / 100)).toFixed(2)
-                          : item.price.toFixed(2)}
-                      </span>
-                      {item.discount > 0 && (
-                        <span className="text-sm text-muted-foreground line-through">
-                          ${item.price.toFixed(2)}
+                      <p className="mb-4 text-sm text-muted-foreground line-clamp-2">
+                        {getItemDescription(item)}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-2xl font-bold text-primary">
+                          ${formatPrice(discountedPrice)}
                         </span>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                        {hasDiscount && (
+                          <span className="text-sm text-muted-foreground line-through">
+                            ${formatPrice(priceNum)}
+                          </span>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
             <div className="mt-8 text-center">
               <Button asChild variant="outline" size="lg">
@@ -177,7 +209,8 @@ export default function Home() {
               </div>
               <h3 className="mb-2 text-xl font-semibold">Open Daily</h3>
               <p className="text-muted-foreground">
-                Monday - Sunday<br />
+                Monday - Sunday
+                <br />
                 11:00 AM - 10:00 PM
               </p>
             </div>

@@ -1,35 +1,36 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams, useOutletContext } from 'react-router-dom';
-import { api, MenuItem } from '@/lib/api';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useEffect, useState } from "react";
+import { useNavigate, useParams, useOutletContext } from "react-router-dom";
+import { api } from "@/lib/api";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { toast } from 'sonner';
-import { ArrowLeft } from 'lucide-react';
-import { format } from 'date-fns';
+} from "@/components/ui/select";
+import { toast } from "sonner";
+import { ArrowLeft } from "lucide-react";
 
 export default function PromotionForm() {
   const { menu_id } = useParams();
   const navigate = useNavigate();
-  const { language } = useOutletContext<{ language: string }>();
+  const { language } = useOutletContext();
   const isEdit = !!menu_id;
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(true);
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [menuItems, setMenuItems] = useState([]);
 
   const [formData, setFormData] = useState({
-    menu_id: menu_id || '',
-    discount: '10',
-    start_date: format(new Date(), 'yyyy-MM-dd'),
-    end_date: format(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), 'yyyy-MM-dd'),
+    menu_id: menu_id || "",
+    discount: "10",
+    start_date: new Date().toISOString().split("T")[0],
+    end_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .split("T")[0],
   });
 
   useEffect(() => {
@@ -39,54 +40,43 @@ export default function PromotionForm() {
   const loadData = async () => {
     try {
       const menuResponse = await api.getMenuItems(language);
-      if (menuResponse.success) {
-        setMenuItems(menuResponse.menu);
-      }
+      if (menuResponse.success) setMenuItems(menuResponse.menu);
 
       if (isEdit && menu_id) {
         const promotionsResponse = await api.getPromotions(language);
         if (promotionsResponse.success) {
           const promotion = promotionsResponse.promotions.find(
-            p => p.food_id === parseInt(menu_id)
+            (p) => p.food_id === parseInt(menu_id)
           );
           if (promotion) {
             setFormData({
               menu_id: menu_id,
               discount: promotion.discount.toString(),
-              start_date: format(new Date(promotion.start_date), 'yyyy-MM-dd'),
-              end_date: format(new Date(promotion.end_date), 'yyyy-MM-dd'),
+              start_date: promotion.start_date.split("T")[0],
+              end_date: promotion.end_date.split("T")[0],
             });
           }
         }
       }
-    } catch (error) {
-      toast.error('Failed to load data');
+    } catch {
+      toast.error("Failed to load data");
     } finally {
       setIsLoadingData(false);
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.menu_id) {
-      toast.error('Please select a menu item');
-      return;
-    }
-
+    if (!formData.menu_id) return toast.error("Please select a menu item");
     const discount = parseFloat(formData.discount);
-    if (isNaN(discount) || discount <= 0 || discount > 100) {
-      toast.error('Discount must be between 1 and 100');
-      return;
-    }
+    if (isNaN(discount) || discount <= 0 || discount > 100)
+      return toast.error("Discount must be between 1 and 100");
 
     const startDate = new Date(formData.start_date);
     const endDate = new Date(formData.end_date);
-
-    if (endDate <= startDate) {
-      toast.error('End date must be after start date');
-      return;
-    }
+    if (endDate <= startDate)
+      return toast.error("End date must be after start date");
 
     setIsLoading(true);
     try {
@@ -98,40 +88,49 @@ export default function PromotionForm() {
 
       if (isEdit && menu_id) {
         await api.updatePromotion(parseInt(menu_id), data);
-        toast.success('Promotion updated successfully');
+        toast.success("Promotion updated successfully");
       } else {
         await api.createPromotion({
           menu_id: parseInt(formData.menu_id),
           ...data,
         });
-        toast.success('Promotion created successfully');
+        toast.success("Promotion created successfully");
       }
-      navigate('/promotions');
-    } catch (error) {
-      toast.error(isEdit ? 'Failed to update promotion' : 'Failed to create promotion');
+      navigate("/admin/promotions");
+    } catch {
+      toast.error(
+        isEdit ? "Failed to update promotion" : "Failed to create promotion"
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (isLoadingData) {
+  if (isLoadingData)
     return (
       <div className="flex items-center justify-center py-12">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
       </div>
     );
-  }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/promotions')}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => navigate("/admin/promotions")}
+        >
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold">{isEdit ? 'Edit Promotion' : 'Add Promotion'}</h1>
+          <h1 className="text-3xl font-bold">
+            {isEdit ? "Edit Promotion" : "Add Promotion"}
+          </h1>
           <p className="text-muted-foreground">
-            {isEdit ? 'Update the promotion details' : 'Create a new promotion for a menu item'}
+            {isEdit
+              ? "Update the promotion details"
+              : "Create a new promotion for a menu item"}
           </p>
         </div>
       </div>
@@ -146,7 +145,9 @@ export default function PromotionForm() {
               <Label htmlFor="menu_id">Menu Item *</Label>
               <Select
                 value={formData.menu_id}
-                onValueChange={(value) => setFormData({ ...formData, menu_id: value })}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, menu_id: value })
+                }
                 disabled={isEdit}
               >
                 <SelectTrigger>
@@ -170,19 +171,23 @@ export default function PromotionForm() {
                 min="1"
                 max="100"
                 value={formData.discount}
-                onChange={(e) => setFormData({ ...formData, discount: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, discount: e.target.value })
+                }
                 required
               />
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="flex gap-4">
               <div className="space-y-2">
                 <Label htmlFor="start_date">Start Date *</Label>
                 <Input
                   id="start_date"
                   type="date"
                   value={formData.start_date}
-                  onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, start_date: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -192,22 +197,23 @@ export default function PromotionForm() {
                   id="end_date"
                   type="date"
                   value={formData.end_date}
-                  onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, end_date: e.target.value })
+                  }
                   required
                 />
               </div>
             </div>
+
+            <Button type="submit" disabled={isLoading}>
+              {isLoading
+                ? "Saving..."
+                : isEdit
+                ? "Update Promotion"
+                : "Create Promotion"}
+            </Button>
           </CardContent>
         </Card>
-
-        <div className="flex gap-4">
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? 'Saving...' : isEdit ? 'Update Promotion' : 'Create Promotion'}
-          </Button>
-          <Button type="button" variant="outline" onClick={() => navigate('/promotions')}>
-            Cancel
-          </Button>
-        </div>
       </form>
     </div>
   );

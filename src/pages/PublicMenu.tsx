@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
-import { api, MenuItem } from '@/lib/api';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { UtensilsCrossed, Search } from 'lucide-react';
-import { toast } from 'sonner';
+import { useEffect, useState } from "react";
+import { useOutletContext } from "react-router-dom";
+import { api, MenuItem } from "@/lib/api";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { UtensilsCrossed, Search } from "lucide-react";
+import { toast } from "sonner";
 import {
   Select,
   SelectContent,
@@ -18,27 +18,29 @@ export default function PublicMenu() {
   const { language } = useOutletContext<{ language: string }>();
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [filteredItems, setFilteredItems] = useState<MenuItem[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
 
+  // Load menu items on language change
   useEffect(() => {
     loadMenu();
   }, [language]);
 
+  // Apply filters whenever menuItems, searchQuery, or selectedCategory changes
   useEffect(() => {
     filterItems();
-  }, [searchQuery, selectedCategory, menuItems]);
+  }, [menuItems, searchQuery, selectedCategory]);
 
   const loadMenu = async () => {
     setIsLoading(true);
     try {
       const data = await api.getPublicMenuItems(language);
-      const available = data.menu.filter(item => item.is_available);
+      const available = data.menu.filter((item) => item.is_available);
       setMenuItems(available);
       setFilteredItems(available);
     } catch (error) {
-      toast.error('Failed to load menu');
+      toast.error("Failed to load menu");
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -46,19 +48,23 @@ export default function PublicMenu() {
   };
 
   const filterItems = () => {
-    let filtered = menuItems;
+    let filtered = [...menuItems];
 
+    // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(item =>
-        getItemName(item).toLowerCase().includes(query) ||
-        getItemDescription(item).toLowerCase().includes(query)
+      filtered = filtered.filter(
+        (item) =>
+          getItemName(item).toLowerCase().includes(query) ||
+          getItemDescription(item).toLowerCase().includes(query)
       );
     }
 
-    if (selectedCategory !== 'all') {
-      filtered = filtered.filter(item => 
-        item.category_name?.toLowerCase() === selectedCategory.toLowerCase()
+    // Category filter
+    if (selectedCategory !== "all") {
+      filtered = filtered.filter(
+        (item) =>
+          item.category_name?.toLowerCase() === selectedCategory.toLowerCase()
       );
     }
 
@@ -66,18 +72,29 @@ export default function PublicMenu() {
   };
 
   const getItemName = (item: MenuItem) => {
-    if (language === 'am') return item.name_am;
-    if (language === 'or') return item.name_or;
+    if (language === "am") return item.name_am || item.name_en;
+    if (language === "or") return item.name_or || item.name_en;
     return item.name_en;
   };
 
   const getItemDescription = (item: MenuItem) => {
-    if (language === 'am') return item.description_am;
-    if (language === 'or') return item.description_or;
+    if (language === "am") return item.description_am || item.description_en;
+    if (language === "or") return item.description_or || item.description_en;
     return item.description_en;
   };
 
-  const categories = ['all', ...Array.from(new Set(menuItems.map(item => item.category_name).filter(Boolean)))];
+  const formatPrice = (price: number | string | undefined) => {
+    const num = Number(price);
+    return isNaN(num) ? "0.00" : num.toFixed(2);
+  };
+
+  // Gather unique categories
+  const categories = [
+    "all",
+    ...Array.from(
+      new Set(menuItems.map((item) => item.category_name).filter(Boolean))
+    ),
+  ];
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -104,10 +121,9 @@ export default function PublicMenu() {
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Categories</SelectItem>
-            {categories.slice(1).map((category) => (
-              <SelectItem key={category} value={category || ''}>
-                {category}
+            {categories.map((category) => (
+              <SelectItem key={category} value={category}>
+                {category === "all" ? "All Categories" : category}
               </SelectItem>
             ))}
           </SelectContent>
@@ -123,12 +139,17 @@ export default function PublicMenu() {
         <div className="flex min-h-[400px] flex-col items-center justify-center text-center">
           <UtensilsCrossed className="mb-4 h-12 w-12 text-muted-foreground" />
           <h3 className="mb-2 text-xl font-semibold">No items found</h3>
-          <p className="text-muted-foreground">Try adjusting your search or filters</p>
+          <p className="text-muted-foreground">
+            Try adjusting your search or filters
+          </p>
         </div>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filteredItems.map((item) => (
-            <Card key={item.id} className="overflow-hidden transition-shadow hover:shadow-lg">
+            <Card
+              key={item.id}
+              className="overflow-hidden transition-shadow hover:shadow-lg"
+            >
               <div className="aspect-video w-full overflow-hidden bg-muted">
                 {item.image ? (
                   <img
@@ -154,27 +175,31 @@ export default function PublicMenu() {
                     )}
                   </div>
                 </div>
-                
+
                 {item.category_name && (
                   <p className="mb-2 text-xs text-muted-foreground uppercase tracking-wide">
                     {item.category_name}
                   </p>
                 )}
-                
+
                 <p className="mb-4 text-sm text-muted-foreground line-clamp-2">
                   {getItemDescription(item)}
                 </p>
-                
+
                 <div className="flex items-center justify-between">
                   <div className="flex items-baseline gap-2">
                     <span className="text-2xl font-bold text-primary">
-                      ${item.discount > 0 
-                        ? (item.price * (1 - item.discount / 100)).toFixed(2)
-                        : item.price.toFixed(2)}
+                      $
+                      {item.discount > 0
+                        ? formatPrice(
+                            Number(item.price) *
+                              (1 - (item.discount || 0) / 100)
+                          )
+                        : formatPrice(item.price)}
                     </span>
                     {item.discount > 0 && (
                       <span className="text-sm text-muted-foreground line-through">
-                        ${item.price.toFixed(2)}
+                        ${formatPrice(item.price)}
                       </span>
                     )}
                   </div>
