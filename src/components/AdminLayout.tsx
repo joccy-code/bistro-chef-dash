@@ -20,12 +20,12 @@ import {
 } from "@/components/ui/select";
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Menu', href: '/menu', icon: UtensilsCrossed },
-  { name: 'Promotions', href: '/promotions', icon: Tag },
+  { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+  { name: 'Menu', href: '/admin/menu', icon: UtensilsCrossed },
+  { name: 'Promotions', href: '/admin/promotions', icon: Tag },
 ];
 
-export function Layout() {
+export function AdminLayout() {
   const { logout } = useAuth();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);

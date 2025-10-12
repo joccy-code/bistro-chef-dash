@@ -27,7 +27,7 @@ export default function Login() {
     try {
       await login(username, password);
       toast.success('Login successful!');
-      navigate('/dashboard');
+      navigate('/admin/dashboard');
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Login failed. Please check your credentials.');
     } finally {

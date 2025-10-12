@@ -65,9 +65,32 @@ class ApiService {
 
     if (response.status === 401) {
       localStorage.removeItem('token');
-      window.location.href = '/login';
+      window.location.href = '/admin/login';
       throw new Error('Unauthorized');
     }
+
+    const data = await response.json();
+
+    if (!data.success && data.message) {
+      throw new Error(data.message);
+    }
+
+    return data;
+  }
+
+  private async publicRequest<T>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<T> {
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+      ...(options.headers || {}),
+    };
+
+    const response = await fetch(`${API_BASE}${endpoint}`, {
+      ...options,
+      headers,
+    });
 
     const data = await response.json();
 
@@ -94,7 +117,7 @@ class ApiService {
 
   logout() {
     localStorage.removeItem('token');
-    window.location.href = '/login';
+    window.location.href = '/admin/login';
   }
 
   // Menu
@@ -149,6 +172,15 @@ class ApiService {
     return this.request<{ success: boolean; result: any }>(`/api/promotions/${menuId}`, {
       method: 'DELETE',
     });
+  }
+
+  // Public API (no auth required)
+  async getPublicMenuItems(lang: string = 'en') {
+    return this.publicRequest<{ success: boolean; menu: MenuItem[] }>(`/api/menu?lang=${lang}`);
+  }
+
+  async getPublicPromotions(lang: string = 'en') {
+    return this.publicRequest<{ success: boolean; promotions: Promotion[] }>(`/api/promotions?lang=${lang}`);
   }
 }
 

@@ -5,8 +5,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { Layout } from "@/components/Layout";
+import { PublicLayout } from "@/components/PublicLayout";
+import { AdminLayout } from "@/components/AdminLayout";
 import Login from "./pages/Login";
+import Home from "./pages/Home";
+import PublicMenu from "./pages/PublicMenu";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
 import Dashboard from "./pages/Dashboard";
 import Menu from "./pages/Menu";
 import MenuForm from "./pages/MenuForm";
@@ -24,16 +29,25 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/login" element={<Login />} />
+            {/* Public Routes */}
+            <Route element={<PublicLayout />}>
+              <Route index element={<Home />} />
+              <Route path="/menu" element={<PublicMenu />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+            </Route>
+
+            {/* Admin Routes */}
+            <Route path="/admin/login" element={<Login />} />
             <Route
-              path="/"
+              path="/admin"
               element={
                 <ProtectedRoute>
-                  <Layout />
+                  <AdminLayout />
                 </ProtectedRoute>
               }
             >
-              <Route index element={<Navigate to="/dashboard" replace />} />
+              <Route index element={<Navigate to="/admin/dashboard" replace />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="menu" element={<Menu />} />
               <Route path="menu/new" element={<MenuForm />} />
@@ -42,6 +56,7 @@ const App = () => (
               <Route path="promotions/new" element={<PromotionForm />} />
               <Route path="promotions/:menu_id" element={<PromotionForm />} />
             </Route>
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
