@@ -64,7 +64,7 @@ export default function PublicMenu() {
     if (selectedCategory !== "all") {
       filtered = filtered.filter(
         (item) =>
-          item.category_name?.toLowerCase() === selectedCategory.toLowerCase()
+          (item.category || item.category_name)?.toLowerCase() === selectedCategory.toLowerCase()
       );
     }
 
@@ -88,7 +88,7 @@ export default function PublicMenu() {
   const categories = [
     "all",
     ...Array.from(
-      new Set(menuItems.map((item) => item.category_name).filter(Boolean))
+      new Set(menuItems.map((item) => item.category || item.category_name).filter(Boolean))
     ),
   ];
 
@@ -172,9 +172,9 @@ export default function PublicMenu() {
                   </div>
                 </div>
 
-                {item.category_name && (
+                {(item.category || item.category_name) && (
                   <p className="mb-2 text-xs text-muted-foreground uppercase tracking-wide">
-                    {item.category_name}
+                    {item.category || item.category_name}
                   </p>
                 )}
 

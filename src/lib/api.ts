@@ -17,6 +17,7 @@ export interface MenuItem {
   description_or: string;
   price: number;
   category_id: number;
+  category?: string;
   category_name?: string;
   image: string;
   is_available: boolean;
