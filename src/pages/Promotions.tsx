@@ -26,10 +26,10 @@ import {
 import { parseISO, format } from "date-fns";
 
 export default function Promotions() {
-  const { language } = useOutletContext();
-  const [promotions, setPromotions] = useState([]);
+  const { language } = useOutletContext<{ language: string }>();
+  const [promotions, setPromotions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [deleteId, setDeleteId] = useState(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   useEffect(() => {
     loadPromotions();
@@ -46,7 +46,7 @@ export default function Promotions() {
     }
   };
 
-  const handleDelete = async (menuId) => {
+  const handleDelete = async (menuId: number) => {
     try {
       await api.deletePromotion(menuId);
       toast.success("Promotion removed successfully");
@@ -58,14 +58,14 @@ export default function Promotions() {
     }
   };
 
-  const isActive = (promotion) => {
+  const isActive = (promotion: any) => {
     const now = new Date();
     const start = new Date(promotion.start_date);
     const end = new Date(promotion.end_date);
     return now >= start && now <= end;
   };
 
-  const formatDate = (date) => {
+  const formatDate = (date: string) => {
     try {
       return format(parseISO(date), "MMM dd, yyyy");
     } catch {

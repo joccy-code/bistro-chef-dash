@@ -72,15 +72,15 @@ export default function PublicMenu() {
   };
 
   const getItemName = (item: MenuItem) => {
-    if (language === "am") return item.name_am || item.name_en;
-    if (language === "or") return item.name_or || item.name_en;
-    return item.name_en;
+    if (language === "am") return item.name_am || item.name_en || "Unnamed";
+    if (language === "or") return item.name_or || item.name_en || "Unnamed";
+    return item.name_en || "Unnamed";
   };
 
   const getItemDescription = (item: MenuItem) => {
-    if (language === "am") return item.description_am || item.description_en;
-    if (language === "or") return item.description_or || item.description_en;
-    return item.description_en;
+    if (language === "am") return item.description_am || item.description_en || "";
+    if (language === "or") return item.description_or || item.description_en || "";
+    return item.description_en || "";
   };
 
   const formatPrice = (price: number | string | undefined) => {

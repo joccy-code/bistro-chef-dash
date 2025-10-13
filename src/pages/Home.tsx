@@ -48,15 +48,15 @@ export default function Home() {
 
   // Helpers
   const getItemName = (item: MenuItem) => {
-    if (language === "am") return item.name_am ?? item.name_en;
-    if (language === "or") return item.name_or ?? item.name_en;
-    return item.name_en ?? "Unnamed Dish";
+    if (language === "am") return item.name_am || item.name_en || "Unnamed Dish";
+    if (language === "or") return item.name_or || item.name_en || "Unnamed Dish";
+    return item.name_en || "Unnamed Dish";
   };
 
   const getItemDescription = (item: MenuItem) => {
-    if (language === "am") return item.description_am ?? "";
-    if (language === "or") return item.description_or ?? "";
-    return item.description_en ?? "";
+    if (language === "am") return item.description_am || item.description_en || "";
+    if (language === "or") return item.description_or || item.description_en || "";
+    return item.description_en || "";
   };
 
   const formatPrice = (price: string | number) => {

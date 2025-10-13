@@ -18,11 +18,11 @@ import { ArrowLeft } from "lucide-react";
 export default function PromotionForm() {
   const { menu_id } = useParams();
   const navigate = useNavigate();
-  const { language } = useOutletContext();
+  const { language } = useOutletContext<{ language: string }>();
   const isEdit = !!menu_id;
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(true);
-  const [menuItems, setMenuItems] = useState([]);
+  const [menuItems, setMenuItems] = useState<any[]>([]);
 
   const [formData, setFormData] = useState({
     menu_id: menu_id || "",
@@ -65,7 +65,7 @@ export default function PromotionForm() {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.menu_id) return toast.error("Please select a menu item");
