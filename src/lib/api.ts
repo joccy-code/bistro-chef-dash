@@ -7,9 +7,11 @@ export interface LoginCredentials {
 
 export interface MenuItem {
   id: number;
+  name?: string;
   name_en: string;
   name_am: string;
   name_or: string;
+  description?: string;
   description_en: string;
   description_am: string;
   description_or: string;
