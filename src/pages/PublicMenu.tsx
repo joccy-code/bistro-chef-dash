@@ -95,9 +95,9 @@ export default function PublicMenu() {
         </p>
       </div>
 
-      {/* Search */}
-      <div className="mb-6">
-        <div className="relative max-w-md">
+      {/* Search and Categories - Side by Side */}
+      <div className="mb-8 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+        <div className="relative max-w-md w-full md:w-auto">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search menu..."
@@ -106,10 +106,9 @@ export default function PublicMenu() {
             className="pl-9"
           />
         </div>
-      </div>
 
-      {/* Categories - Horizontal */}
-      <div className="mb-8 flex flex-wrap gap-2">
+        {/* Categories - Horizontal */}
+        <div className="flex flex-wrap gap-2">
         {categories.map((category) => (
           <Button
             key={category}
@@ -120,6 +119,7 @@ export default function PublicMenu() {
             {category === "all" ? "All Categories" : category}
           </Button>
         ))}
+        </div>
       </div>
 
       {/* Menu Items Grid */}

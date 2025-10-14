@@ -198,8 +198,8 @@ export default function Menu() {
             ) : (
               filteredItems.map((item) => (
                 <TableRow key={item.id}>
-                  <TableCell className="font-medium">{getName(item)}</TableCell>
-                  <TableCell>${formatPrice(item.price)}</TableCell>
+                  <TableCell className="font-medium text-foreground">{getName(item)}</TableCell>
+                  <TableCell className="text-foreground">${formatPrice(item.price)}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
                       <Badge
