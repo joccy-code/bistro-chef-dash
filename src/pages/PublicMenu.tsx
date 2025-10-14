@@ -4,15 +4,9 @@ import { api, MenuItem } from "@/lib/api";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { UtensilsCrossed, Search } from "lucide-react";
 import { toast } from "sonner";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 export default function PublicMenu() {
   const { language } = useOutletContext<{ language: string }>();
@@ -101,9 +95,9 @@ export default function PublicMenu() {
         </p>
       </div>
 
-      {/* Filters */}
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row">
-        <div className="relative flex-1">
+      {/* Search */}
+      <div className="mb-6">
+        <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search menu..."
@@ -112,18 +106,20 @@ export default function PublicMenu() {
             className="pl-9"
           />
         </div>
-        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-          <SelectTrigger className="w-full sm:w-[200px]">
-            <SelectValue placeholder="Category" />
-          </SelectTrigger>
-          <SelectContent>
-            {categories.map((category) => (
-              <SelectItem key={category} value={category}>
-                {category === "all" ? "All Categories" : category}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      </div>
+
+      {/* Categories - Horizontal */}
+      <div className="mb-8 flex flex-wrap gap-2">
+        {categories.map((category) => (
+          <Button
+            key={category}
+            variant={selectedCategory === category ? "default" : "outline"}
+            onClick={() => setSelectedCategory(category)}
+            className="capitalize"
+          >
+            {category === "all" ? "All Categories" : category}
+          </Button>
+        ))}
       </div>
 
       {/* Menu Items Grid */}
