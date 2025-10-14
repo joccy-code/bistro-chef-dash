@@ -66,16 +66,13 @@ export default function PublicMenu() {
   };
 
   const getItemName = (item: MenuItem) => {
-    if (language === "am") return item.name_am || item.name_en || item.name_or || "Unnamed";
-    if (language === "or") return item.name_or || item.name_en || item.name_am || "Unnamed";
-    return item.name_en || item.name_am || item.name_or || "Unnamed";
+    return item.name || "Unnamed";
   };
 
   const getItemDescription = (item: MenuItem) => {
-    if (language === "am") return item.description_am || item.description_en || item.description_or || "";
-    if (language === "or") return item.description_or || item.description_en || item.description_am || "";
-    return item.description_en || item.description_am || item.description_or || "";
+    return item.description || "";
   };
+
   const formatPrice = (price: number | string | undefined) => {
     const num = Number(price);
     return isNaN(num) ? "0.00" : num.toFixed(2);
