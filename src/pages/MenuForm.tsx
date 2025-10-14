@@ -152,9 +152,9 @@ export default function MenuForm() {
     if (!validateForm()) return;
 
     setIsLoading(true);
-    
+
     let imageUrl = formData.image;
-    
+
     // If user uploaded a new image, convert to base64
     if (imageFile) {
       const reader = new FileReader();
@@ -209,7 +209,11 @@ export default function MenuForm() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate("/admin/menu")}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => navigate("/admin/menu")}
+        >
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
@@ -333,6 +337,16 @@ export default function MenuForm() {
                   max="100"
                   value={formData.discount}
                   onChange={(e) => handleChange("discount", e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="category_id">Category ID</Label>
+                <Input
+                  id="category_id"
+                  type="number"
+                  min="1"
+                  value={formData.category_id}
+                  onChange={(e) => handleChange("category_id", e.target.value)}
                 />
               </div>
             </div>
