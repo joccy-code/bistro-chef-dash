@@ -16,26 +16,42 @@ export default function PublicMenu() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load menu items on language change
+  // 🧭 Load menu items whenever language changes
   useEffect(() => {
     loadMenu();
   }, [language]);
 
-  // Apply filters whenever menuItems, searchQuery, or selectedCategory changes
+  // 🧭 Re-apply filters whenever items, search, or category changes
   useEffect(() => {
     filterItems();
   }, [menuItems, searchQuery, selectedCategory]);
 
   const loadMenu = async () => {
     setIsLoading(true);
+
+    // 📦 1. Load cached menu first (if exists)
+    const cached = localStorage.getItem(`menu_cache_${language}`);
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached) as MenuItem[];
+        setMenuItems(parsed);
+        setFilteredItems(parsed);
+        setIsLoading(false);
+      } catch (err) {
+        console.error("Cache parse error", err);
+      }
+    }
+
+    // 🌐 2. Then try fetching fresh menu from server
     try {
       const data = await api.getPublicMenuItems(language);
-      const available = data.menu.filter((item) => item.is_available);
+      const available = data.menu.filter((item: MenuItem) => item.is_available);
       setMenuItems(available);
       setFilteredItems(available);
+      localStorage.setItem(`menu_cache_${language}`, JSON.stringify(available));
     } catch (error) {
-      toast.error("Failed to load menu");
-      console.error(error);
+      toast.error("Failed to fetch menu — showing saved data if available");
+      console.error("Menu fetch failed:", error);
     } finally {
       setIsLoading(false);
     }
@@ -44,7 +60,7 @@ export default function PublicMenu() {
   const filterItems = () => {
     let filtered = [...menuItems];
 
-    // Search filter
+    // 🔍 Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
@@ -54,35 +70,35 @@ export default function PublicMenu() {
       );
     }
 
-    // Category filter
+    // 🏷️ Category filter
     if (selectedCategory !== "all") {
       filtered = filtered.filter(
         (item) =>
-          (item.category || item.category_name)?.toLowerCase() === selectedCategory.toLowerCase()
+          (item.category || item.category_name)?.toLowerCase() ===
+          selectedCategory.toLowerCase()
       );
     }
 
     setFilteredItems(filtered);
   };
 
-  const getItemName = (item: MenuItem) => {
-    return item.name || "Unnamed";
-  };
-
-  const getItemDescription = (item: MenuItem) => {
-    return item.description || "";
-  };
+  const getItemName = (item: MenuItem) => item.name || "Unnamed";
+  const getItemDescription = (item: MenuItem) => item.description || "";
 
   const formatPrice = (price: number | string | undefined) => {
     const num = Number(price);
     return isNaN(num) ? "0.00" : num.toFixed(2);
   };
 
-  // Gather unique categories
+  // 🧭 Gather unique categories
   const categories = [
     "all",
     ...Array.from(
-      new Set(menuItems.map((item) => item.category || item.category_name).filter(Boolean))
+      new Set(
+        menuItems
+          .map((item) => item.category || item.category_name)
+          .filter(Boolean)
+      )
     ),
   ];
 
@@ -95,7 +111,7 @@ export default function PublicMenu() {
         </p>
       </div>
 
-      {/* Search and Categories - Side by Side */}
+      {/* 🔍 Search + 🏷️ Category Filter */}
       <div className="mb-8 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
         <div className="relative max-w-md w-full md:w-auto">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -107,22 +123,21 @@ export default function PublicMenu() {
           />
         </div>
 
-        {/* Categories - Horizontal */}
         <div className="flex flex-wrap gap-2">
-        {categories.map((category) => (
-          <Button
-            key={category}
-            variant={selectedCategory === category ? "default" : "outline"}
-            onClick={() => setSelectedCategory(category)}
-            className="capitalize"
-          >
-            {category === "all" ? "All Categories" : category}
-          </Button>
-        ))}
+          {categories.map((category) => (
+            <Button
+              key={category}
+              variant={selectedCategory === category ? "default" : "outline"}
+              onClick={() => setSelectedCategory(category)}
+              className="capitalize"
+            >
+              {category === "all" ? "All Categories" : category}
+            </Button>
+          ))}
         </div>
       </div>
 
-      {/* Menu Items Grid */}
+      {/* 🖼️ Menu Grid */}
       {isLoading ? (
         <div className="flex min-h-[400px] items-center justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />

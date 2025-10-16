@@ -25,9 +25,22 @@ import {
 } from "@/components/ui/alert-dialog";
 import { parseISO, format } from "date-fns";
 
+interface MenuItem {
+  id: number;
+  name_en: string;
+}
+
+interface Promotion {
+  food_id: number;
+  discount: number;
+  start_date: string;
+  end_date: string;
+  menu_item: MenuItem;
+}
+
 export default function Promotions() {
   const { language } = useOutletContext<{ language: string }>();
-  const [promotions, setPromotions] = useState<any[]>([]);
+  const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
@@ -58,7 +71,7 @@ export default function Promotions() {
     }
   };
 
-  const isActive = (promotion: any) => {
+  const isActive = (promotion: Promotion) => {
     const now = new Date();
     const start = new Date(promotion.start_date);
     const end = new Date(promotion.end_date);
@@ -123,7 +136,7 @@ export default function Promotions() {
               promotions.map((promotion) => (
                 <TableRow key={promotion.food_id}>
                   <TableCell className="font-medium">
-                    {promotion.food_name}
+                    {promotion.menu_item.name_en} {/* updated */}
                   </TableCell>
                   <TableCell>
                     <Badge

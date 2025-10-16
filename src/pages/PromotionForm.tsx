@@ -15,17 +15,30 @@ import {
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 
+interface MenuItem {
+  id: number;
+  name_en: string;
+}
+
+interface Promotion {
+  food_id: number;
+  discount: number;
+  start_date: string;
+  end_date: string;
+  menu_item: MenuItem;
+}
+
 export default function PromotionForm() {
   const { menu_id } = useParams();
   const navigate = useNavigate();
   const { language } = useOutletContext<{ language: string }>();
   const isEdit = !!menu_id;
+
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(true);
-  const [menuItems, setMenuItems] = useState<any[]>([]);
-
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [formData, setFormData] = useState({
-    menu_id: menu_id || "",
+    menu_id: "",
     discount: "10",
     start_date: new Date().toISOString().split("T")[0],
     end_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
@@ -39,18 +52,21 @@ export default function PromotionForm() {
 
   const loadData = async () => {
     try {
+      // 1️⃣ Load menu items
       const menuResponse = await api.getMenuItems(language);
       if (menuResponse.success) setMenuItems(menuResponse.menu);
 
-      if (isEdit && menu_id) {
+      // 2️⃣ If editing, load promotions
+      if (isEdit && menu_id && menuResponse.success) {
         const promotionsResponse = await api.getPromotions(language);
         if (promotionsResponse.success) {
           const promotion = promotionsResponse.promotions.find(
             (p) => p.food_id === parseInt(menu_id)
           );
           if (promotion) {
+            // ✅ Ensure menu_id is string and matches a loaded menuItem
             setFormData({
-              menu_id: menu_id,
+              menu_id: promotion.menu_item.id.toString(),
               discount: promotion.discount.toString(),
               start_date: promotion.start_date.split("T")[0],
               end_date: promotion.end_date.split("T")[0],
@@ -67,8 +83,8 @@ export default function PromotionForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!formData.menu_id) return toast.error("Please select a menu item");
+
     const discount = parseFloat(formData.discount);
     if (isNaN(discount) || discount <= 0 || discount > 100)
       return toast.error("Discount must be between 1 and 100");
@@ -141,6 +157,7 @@ export default function PromotionForm() {
             <CardTitle>Promotion Details</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Menu Item */}
             <div className="space-y-2">
               <Label htmlFor="menu_id">Menu Item *</Label>
               <Select
@@ -163,6 +180,7 @@ export default function PromotionForm() {
               </Select>
             </div>
 
+            {/* Discount */}
             <div className="space-y-2">
               <Label htmlFor="discount">Discount (%) *</Label>
               <Input
@@ -178,6 +196,7 @@ export default function PromotionForm() {
               />
             </div>
 
+            {/* Dates */}
             <div className="flex gap-4">
               <div className="space-y-2">
                 <Label htmlFor="start_date">Start Date *</Label>

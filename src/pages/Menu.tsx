@@ -54,6 +54,7 @@ export default function Menu() {
     setIsLoading(true);
     try {
       const response = await api.getMenuItems(language);
+
       if (response.success) setMenuItems(response.menu);
     } catch (error) {
       toast.error("Failed to load menu items");
@@ -104,10 +105,14 @@ export default function Menu() {
     }
   };
 
+  // const getName = (item: MenuItem) => {
+  //   if (language === "am") return item.name_am || item.name_en;
+  //   if (language === "or") return item.name_or || item.name_en;
+  //   return item.name_en;
+  // };
+
   const getName = (item: MenuItem) => {
-    if (language === "am") return item.name_am || item.name_en;
-    if (language === "or") return item.name_or || item.name_en;
-    return item.name_en;
+    return item.name || "Unnamed";
   };
 
   const formatPrice = (price: string | number | undefined) => {
@@ -198,8 +203,12 @@ export default function Menu() {
             ) : (
               filteredItems.map((item) => (
                 <TableRow key={item.id}>
-                  <TableCell className="font-medium text-foreground">{getName(item)}</TableCell>
-                  <TableCell className="text-foreground">${formatPrice(item.price)}</TableCell>
+                  <TableCell className="font-medium text-foreground">
+                    {getName(item)}
+                  </TableCell>
+                  <TableCell className="text-foreground">
+                    ${formatPrice(item.price)}
+                  </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
                       <Badge
