@@ -56,7 +56,7 @@ const App = () => (
               <Route path="promotions" element={<Promotions />} />
               <Route path="promotions/new" element={<PromotionForm />} />
               <Route path="promotions/:menu_id" element={<PromotionForm />} />
-              <Route path="contact" element={<ContactMessages />} />
+              <Route path="messages" element={<ContactMessages />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
