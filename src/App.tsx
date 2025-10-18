@@ -17,6 +17,7 @@ import Menu from "./pages/Menu";
 import MenuForm from "./pages/MenuForm";
 import Promotions from "./pages/Promotions";
 import PromotionForm from "./pages/PromotionForm";
+import ContactMessages from "./pages/ContactMessages";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -55,6 +56,7 @@ const App = () => (
               <Route path="promotions" element={<Promotions />} />
               <Route path="promotions/new" element={<PromotionForm />} />
               <Route path="promotions/:menu_id" element={<PromotionForm />} />
+              <Route path="messages" element={<ContactMessages />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
