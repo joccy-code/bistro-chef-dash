@@ -24,7 +24,7 @@ const navigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { name: 'Menu', href: '/admin/menu', icon: UtensilsCrossed },
   { name: 'Promotions', href: '/admin/promotions', icon: Tag },
-  { name: 'Messages', href: '/admin/messages', icon: MessageSquare },
+  { name: 'Contact', href: '/admin/messages', icon: MessageSquare },
 ];
 
 export function AdminLayout() {
