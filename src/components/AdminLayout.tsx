@@ -8,8 +8,7 @@ import {
   LogOut,
   Menu,
   X,
-  Globe,
-  MessageSquare
+  Globe
 } from 'lucide-react';
 import { useState } from 'react';
 import {
@@ -24,7 +23,6 @@ const navigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { name: 'Menu', href: '/admin/menu', icon: UtensilsCrossed },
   { name: 'Promotions', href: '/admin/promotions', icon: Tag },
-  { name: 'Contact', href: '/admin/messages', icon: MessageSquare },
 ];
 
 export function AdminLayout() {

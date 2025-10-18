@@ -6,7 +6,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 import { toast } from 'sonner';
-import { api } from '@/lib/api';
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -21,17 +20,12 @@ export default function Contact() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    try {
-      const response = await api.submitContactMessage(formData);
-      if (response.success) {
-        toast.success('Message sent! We\'ll get back to you soon.');
-        setFormData({ name: '', email: '', phone: '', message: '' });
-      }
-    } catch (error) {
-      toast.error('Failed to send message. Please try again.');
-    } finally {
+    // Simulate form submission
+    setTimeout(() => {
+      toast.success('Message sent! We\'ll get back to you soon.');
+      setFormData({ name: '', email: '', phone: '', message: '' });
       setIsSubmitting(false);
-    }
+    }, 1000);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

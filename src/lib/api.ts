@@ -33,19 +33,6 @@ export interface Promotion {
   discount: number;
   start_date: string;
   end_date: string;
-  menu_item: {
-    id: number;
-    name_en: string;
-  };
-}
-
-export interface ContactMessage {
-  id: number;
-  name: string;
-  email: string;
-  phone?: string;
-  message: string;
-  created_at: string;
 }
 
 export interface DashboardStats {
@@ -224,34 +211,6 @@ class ApiService {
   async getPublicPromotions(lang: string = "en") {
     return this.publicRequest<{ success: boolean; promotions: Promotion[] }>(
       `/api/promotions?lang=${lang}`
-    );
-  }
-
-  // Contact Messages
-  async getContactMessages() {
-    return this.request<{ success: boolean; messages: ContactMessage[] }>(
-      "/api/admin/contact-messages"
-    );
-  }
-
-  async deleteContactMessage(id: number) {
-    return this.request<{ success: boolean }>(`/api/admin/contact-messages/${id}`, {
-      method: "DELETE",
-    });
-  }
-
-  async submitContactMessage(data: {
-    name: string;
-    email: string;
-    phone?: string;
-    message: string;
-  }) {
-    return this.publicRequest<{ success: boolean; message: string }>(
-      "/api/contact",
-      {
-        method: "POST",
-        body: JSON.stringify(data),
-      }
     );
   }
 }
