@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useOutletContext, Link } from "react-router-dom";
-import { api, MenuItem, Promotion } from "@/lib/api";
+import { api, MenuItem, Promotion, getImageUrl } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -147,7 +147,7 @@ export default function Home() {
                     <div className="aspect-video w-full overflow-hidden bg-muted">
                       {item.image ? (
                         <img
-                          src={item.image}
+                          src={getImageUrl(item.image)}
                           alt={getItemName(item)}
                           className="h-full w-full object-cover"
                         />

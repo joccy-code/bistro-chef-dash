@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import { api, MenuItem } from "@/lib/api";
+import { api, MenuItem, getImageUrl } from "@/lib/api";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -160,7 +160,7 @@ export default function PublicMenu() {
               <div className="aspect-video w-full overflow-hidden bg-muted">
                 {item.image ? (
                   <img
-                    src={item.image}
+                    src={getImageUrl(item.image)}
                     alt={getItemName(item)}
                     className="h-full w-full object-cover transition-transform hover:scale-105"
                   />

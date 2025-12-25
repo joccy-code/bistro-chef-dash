@@ -1,4 +1,15 @@
-const API_BASE = "http://localhost:5000";
+export const API_BASE = "http://localhost:5000";
+
+// Helper to get full image URL
+export const getImageUrl = (imagePath: string | undefined): string => {
+  if (!imagePath) return "";
+  // If already a full URL or base64, return as-is
+  if (imagePath.startsWith("http") || imagePath.startsWith("data:")) {
+    return imagePath;
+  }
+  // Otherwise, prepend the API base URL
+  return `${API_BASE}${imagePath.startsWith("/") ? "" : "/"}${imagePath}`;
+};
 
 export interface LoginCredentials {
   username: string;
