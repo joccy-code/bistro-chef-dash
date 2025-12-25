@@ -25,18 +25,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { parseISO, format } from "date-fns";
 
-interface MenuItem {
-  id: number;
-  name_en: string;
-}
-
-interface Promotion {
-  food_id: number;
-  discount: number;
-  start_date: string;
-  end_date: string;
-  menu_item: MenuItem;
-}
+import { Promotion } from "@/lib/api";
 
 export default function Promotions() {
   const { language } = useOutletContext<{ language: string }>();
@@ -136,7 +125,7 @@ export default function Promotions() {
               promotions.map((promotion) => (
                 <TableRow key={promotion.food_id}>
                   <TableCell className="font-medium">
-                    {promotion.menu_item.name_en} {/* updated */}
+                    {promotion.menu_item?.name_en || promotion.food_name || `Item #${promotion.food_id}`}
                   </TableCell>
                   <TableCell>
                     <Badge

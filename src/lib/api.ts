@@ -33,6 +33,10 @@ export interface Promotion {
   discount: number;
   start_date: string;
   end_date: string;
+  menu_item?: {
+    id: number;
+    name_en: string;
+  };
 }
 
 export interface DashboardStats {

@@ -15,17 +15,11 @@ import {
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
 
+import { Promotion } from "@/lib/api";
+
 interface MenuItem {
   id: number;
   name_en: string;
-}
-
-interface Promotion {
-  food_id: number;
-  discount: number;
-  start_date: string;
-  end_date: string;
-  menu_item: MenuItem;
 }
 
 export default function PromotionForm() {
@@ -66,7 +60,7 @@ export default function PromotionForm() {
           if (promotion) {
             // ✅ Ensure menu_id is string and matches a loaded menuItem
             setFormData({
-              menu_id: promotion.menu_item.id.toString(),
+              menu_id: (promotion.menu_item?.id || promotion.food_id).toString(),
               discount: promotion.discount.toString(),
               start_date: promotion.start_date.split("T")[0],
               end_date: promotion.end_date.split("T")[0],
