@@ -45,6 +45,13 @@ export default function PublicMenu() {
     // 🌐 2. Then try fetching fresh menu from server
     try {
       const data = await api.getPublicMenuItems(language);
+      console.log("🔍 API Response:", data);
+      console.log("🖼️ First item image data:", data.menu[0]?.image ? {
+        exists: true,
+        startsWithData: data.menu[0].image.startsWith("data:"),
+        length: data.menu[0].image.length,
+        preview: data.menu[0].image.substring(0, 100) + "..."
+      } : "No image");
       const available = data.menu.filter((item: MenuItem) => item.is_available);
       setMenuItems(available);
       setFilteredItems(available);
